@@ -40,6 +40,21 @@ class BigQuery
     end
   end
 
+  def extract(config)
+    res = api({
+      :api_method => @bq.jobs.insert,
+      :body_object => {
+        configuration: config
+      }
+    })
+
+    if res.has_key? "errors"
+      raise BigQueryError, "BigQuery has returned an error :: #{res['errors'].inspect}" 
+    else
+      res
+    end
+  end
+
   def load(opts)
     api({
       :api_method => @bq.jobs.insert,
