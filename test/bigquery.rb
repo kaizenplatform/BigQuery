@@ -14,6 +14,12 @@ class BigQueryTest < MiniTest::Test
     assert_equal "bigquery#table", tables[0]['kind']
   end
 
+  def test_for_table_exists?
+    a_table_id = @bq.tables[0]['tableReference']['tableId'].to_s
+    assert_equal true, @bq.table_exists?(a_table_id)
+    assert_equal false, @bq.table_exists?('test_table_not_exsist')
+  end
+
   def test_for_query
     result = @bq.query("SELECT * FROM [publicdata:samples.shakespeare] LIMIT 1")
 
@@ -21,6 +27,10 @@ class BigQueryTest < MiniTest::Test
     assert_equal true, result['jobComplete']
   end
 
+  def test_for_datadets
+    datasets = @bq.datasets
+    assert_equal "bigquery#dataset", datasets[0]['kind']
+  end
   # def test_timeout_error
   #   sleep(60 * 60)
 

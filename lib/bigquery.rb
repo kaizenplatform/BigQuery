@@ -131,6 +131,24 @@ class BigQuery
     end
   end
 
+  def datasets
+    api({
+      :api_method => @bq.datasets.list
+    })['datasets']
+  end
+
+  def table_exists?(tableId, dataset = @dataset)
+    ret = api({
+      :api_method => @bq.tables.get,
+      :parameters => {"datasetId" => dataset, "tableId" => tableId}
+    })
+    if ret.key?('tableReference')
+      true
+    else
+      false
+    end
+  end
+
   def tables(dataset = @dataset)
     api({
       :api_method => @bq.tables.list,
