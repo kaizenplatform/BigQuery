@@ -6,7 +6,10 @@ class BigQuery
   attr_accessor :dataset, :project_id
 
   def initialize(opts = {})
-    @client = Google::APIClient.new
+    @client = Google::APIClient.new(
+      application_name: opts['application_name'] || 'sample_application_name',
+      application_version: opts['application_version'] || '0.0.1'
+    )
 
     key = Google::APIClient::PKCS12.load_key(File.open(
       opts['key'], mode: 'rb'),
@@ -125,6 +128,24 @@ class BigQuery
     while(( res = get_query_results(job_id, :startIndex => current_row) ) && res['rows'] && current_row < res['totalRows'].to_i ) do
       res['rows'].each(&block)
       current_row += res['rows'].size
+    end
+  end
+
+  def datasets
+    api({
+      :api_method => @bq.datasets.list
+    })['datasets']
+  end
+
+  def table_exists?(tableId, dataset = @dataset)
+    ret = api({
+      :api_method => @bq.tables.get,
+      :parameters => {"datasetId" => dataset, "tableId" => tableId}
+    })
+    if ret.key?('tableReference')
+      true
+    else
+      false
     end
   end
 
