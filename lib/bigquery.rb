@@ -100,6 +100,21 @@ class BigQuery
     })
   end
 
+  def insert_rows(tableId, jsons, opts = {})
+    rows = jsons.map{|json| { json: json }}
+    api({
+      :api_method => @bq.tabledata.insert_all,
+      :parameters => {
+        datasetId: @dataset,
+        tableId: tableId
+      }.merge(opts),
+      :body_object => {
+        :kind => "bigquery#tableDataInsertAllRequest",
+        :rows => rows
+      }
+    })
+  end
+
   def get_query_results(jobId, opts = {})
     opts['jobId'] = jobId
     api({ 
