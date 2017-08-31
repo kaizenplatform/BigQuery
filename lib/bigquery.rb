@@ -30,10 +30,25 @@ class BigQuery
     @dataset = opts['dataset']
   end
 
-  def query(q, timeoutMs = 90 * 1000)
+  def query_job(q, opt = {})
+    backoff = ->(retries) { sleep 2 * retries + 5 }
+    retries = 0
+    res = query(q, 5000, opt)
+    unless res.has_key?('error')
+      job_id = res['jobReference']['jobId']
+      until res['jobComplete'] or res.has_key?('error')
+        backoff.call retries
+        retries += 1
+        res = get_query_results(job_id)
+      end
+    end
+    return res
+  end
+
+  def query(q, timeoutMs = 90 * 1000, opt = {})
     res = api({
       :api_method => @bq.jobs.query,
-      :body_object => { "query" => q, 'timeoutMs' => timeoutMs}
+      :body_object => { "query" => q, 'timeoutMs' => timeoutMs}.merge(opt)
     })
 
     if res.has_key? "errors"

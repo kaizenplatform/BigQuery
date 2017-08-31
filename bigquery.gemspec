@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<bundler>, [">= 0"])
       s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<minitest>, [">= 0"])
+      s.add_development_dependency(%q<byebug>, [">= 0"])
     else
       s.add_dependency(%q<google-api-client>, [">= 0.4.6"])
       s.add_dependency(%q<bundler>, [">= 0"])

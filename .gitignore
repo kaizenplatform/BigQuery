@@ -1,3 +1,5 @@
 *.gem
 .*.yml
 .*.p12
+*.swp
+.byebug_history
